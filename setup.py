@@ -10,6 +10,7 @@ setup(
     name="MicroBlojeeq",
     version="1.0dev",
     py_modules=["run"],
+    packages=["app"],
     install_requires=requirements(),
     entry_points="""
         [console_scripts]
