@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Sign In</h1>
 <form action="" method="post" name="login">
-    {{ from.hidden_tag() }}
+    {{ form.hidden_tag() }}
     <p>
         Please enter your OpenID:<br>
         {{ form.openid(size=80) }}<br>

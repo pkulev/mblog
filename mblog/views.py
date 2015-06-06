@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect
 
-from app import app
-from forms import LoginForm
+from mblog import app
+from mblog.forms import LoginForm
 
 
 class Templates:

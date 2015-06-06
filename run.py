@@ -2,7 +2,7 @@
 
 from flask.ext.script import Manager
 
-from app import app
+from mblog import app
 
 
 manager = Manager(app)
