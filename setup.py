@@ -15,12 +15,13 @@ setup(
     version="1.0dev",
     description="Flask micro blog.",
     long_description=description(),
-    py_modules=["run", "db_create"],
+    py_modules=["run", "create_db", "migrate_db"],
     packages=find_packages(),
     install_requires=requirements(),
     entry_points="""
         [console_scripts]
         mblog-run=run:main
         mblog-create-db=create_db:main
+        mblog-mirgate-db=migrate_db:main
         """
 )

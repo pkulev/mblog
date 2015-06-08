@@ -33,7 +33,6 @@ clean:
 	${RM} ${ENV}
 	${RM} ${PROJ}.egg-info
 	${RM} __pycache__
-	${RM} mblog.db
-	${RM} db_repository
+	${RM} *~ \#*
 
 .PHONY: help, clean
