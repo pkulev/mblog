@@ -1,4 +1,6 @@
+sqlalchemy==0.9.9
+sqlalchemy-migrate
 flask
-flask-script
 flask-wtf
-
+flask-script
+flask-sqlalchemy

@@ -1,6 +1,6 @@
 PROJ=MicroBlojeeq
 
-VENV=virtualenv
+VENV=virtualenv --python=python3
 ENV=./env
 PYTHON=${ENV}/bin/python3
 PIP=${ENV}/bin/pip3
@@ -18,19 +18,22 @@ help:
 	@printf "        install    deploy production.\n"
 
 devel: clean
-	@printf "Deploying\n"
+	@printf "========== Deploying devel environment ==========\n"
 	${VENV} ${ENV}
+	${PIP} install --upgrade pip
 	${PIP} install --editable .
 	@printf "Use following command to activate virtual environment:\n"
 	@printf "source ${ENV}/bin/activate\n"
 
 install: clean
-	@printf "Prod deploying\n"
+	@printf "========== Deploying prod environment ==========\n"
 
 clean:
-	@printf "Removing old environment\n"
+	@printf "========== Removing old environment ==========\n"
 	${RM} ${ENV}
 	${RM} ${PROJ}.egg-info
 	${RM} __pycache__
+	${RM} mblog.db
+	${RM} db_repository
 
 .PHONY: help, clean
