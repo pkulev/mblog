@@ -23,13 +23,14 @@ USERDEL=userdel -rf ${PROJ_USER}
 all: help
 
 help:
-	@printf "USAGE: make [help] [clean] [install_deps] {devel | install}\n"
+	@printf "USAGE: make {help | clean | install_deps | devel | install | {install|remove}_production_environment}\n"
 	@printf "OPTIONS: \n"
-	@printf "        help          print this message;\n"
-	@printf "        clean         remove venv and builds;\n"
-	@printf "        devel         deploy development environment;\n"
-	@printf "        install       deploy production;\n"
-	@printf "        install_deps  install dependencies.\n"
+	@printf "        help                                 print this message;\n"
+	@printf "        clean                                remove venv and builds;\n"
+	@printf "        devel                                deploy development environment;\n"
+	@printf "        install_deps                         install dependencies;\n"
+	@printf "        remove_production_environment        remove production;\n"
+	@printf "        install_production_environment       deploy production.\n"
 
 devel: clean
 	@printf "========== Deploying devel environment ==========\n"
@@ -65,6 +66,6 @@ clean:
 remove_production_environment:
 	@printf "========== Removing production environment ==========\n"
 	sudo ${USERDEL}
-	@printf "Omitting webserver removing (UWSGI, NGINX)...\n"
+	@printf "Omitting webserver removal (UWSGI, NGINX)...\n"
 
-.PHONY: all help devel install install_deps clean remove_production_environment
+.PHONY: all help devel install_deps clean install_production_environment remove_production_environment
