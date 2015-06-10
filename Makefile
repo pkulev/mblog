@@ -45,8 +45,9 @@ devel: clean
 	${VENV} ${DEV_ENV}
 	${DEV_PIP} install --upgrade pip
 	${DEV_PIP} install --editable .
-	@printf "Use following command to activate virtual environment:\n"
+	@printf "\n\nUse following command to activate virtual environment:\n"
 	@printf "source ${DEV_ENV}/bin/activate\n"
+	@printf "uwsgi --http 0.0.0.0:8080 --wsgi-file run.py --callable app --master\n"
 
 clean:
 	@printf "========== Removing old environment ==========\n"

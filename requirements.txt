@@ -4,3 +4,4 @@ sqlalchemy-migrate
 flask-wtf
 flask-script
 flask-sqlalchemy
+uwsgi
