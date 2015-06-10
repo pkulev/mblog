@@ -12,7 +12,7 @@ def requirements():
 
 setup(
     name="MicroBlojeeq",
-    version="1.0dev",
+    version="1.0",
     description="Flask micro blog.",
     long_description=description(),
     py_modules=["run", "create_db", "migrate_db"],
