@@ -93,7 +93,7 @@ remove_production_environment:
 	@printf "========== Removing production environment ==========\n"
 	sudo ${USERDEL}
 	sudo ${RM} /etc/mblog
-	sudo ${RM} /etc/init.d/mblog
+	sudo ${RM} /etc/init.d/mblogd
 	sudo ${RM} /var/run/mblog
 	sudo ${RM} /var/log/mblog
 	@printf "Omitting system packages removal, use make remove_deps.\n"
