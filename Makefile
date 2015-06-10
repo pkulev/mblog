@@ -22,6 +22,7 @@ CP=cp -rf
 RM=rm -rf
 MKDIR=mkdir -p
 CHOWN=chown
+CHMOD=chmod
 SUWRAP=sudo -u ${PROJ_USER}
 USERADD=adduser -g ${PROJ_WS_GROUP} ${PROJ_USER}
 USERDEL=userdel -rf ${PROJ_USER}
@@ -67,10 +68,15 @@ install_production_environment: clean install_deps generate_prod_makefile
 	sudo ${MKDIR} /etc/mblog
 	sudo ${MKDIR} /var/run/mblog
 	sudo ${MKDIR} /var/log/mblog
+	sudo ${MKDIR} /var/run/lock/mblog
 	sudo ${CHOWN} ${PROJ_USER}:${PROJ_WS_GROUP} /var/run/mblog
 	sudo ${CHOWN} ${PROJ_USER}:${PROJ_WS_GROUP} /var/log/mblog
+	sudo ${CHOWN} ${PROJ_USER}:${PROJ_WS_GROUP} /var/run/lock/mblog
 	sudo ${CP} ${PROJ_HOME}/mblog-uwsgi.ini /etc/mblog/
 	sudo ${CP} ${PROJ_HOME}/mblogd /etc/init.d/
+	sudo ${CHMOD} +x /etc/init.d/mblogd
+	sudo chkconfig --add mblogd
+	sudo chkconfig mblogd on
 	${SUWRAP} ${MAKE} -C ${PROJ_HOME} -f ${PROJ_HOME}/Makefile.prod install
 	@printf "\n\nUse following command to activate virtual environment:\n"
 	@printf "sudo su ${PROJ_USER}\n"
@@ -79,7 +85,7 @@ install_production_environment: clean install_deps generate_prod_makefile
 
 install_deps:
 	@printf "========== Installing dependencies ==========\n"
-	sudo yum install nginx
+	sudo yum install nginx python3 python3-pip python3-devel
 	sudo pip install virtualenv
 
 generate_prod_makefile:
@@ -96,14 +102,16 @@ remove_production_environment:
 	sudo ${RM} /etc/init.d/mblogd
 	sudo ${RM} /var/run/mblog
 	sudo ${RM} /var/log/mblog
-	@printf "Omitting system packages removal, use make remove_deps.\n"
-	@printf "Omitting webserver removal (UWSGI, NGINX)...\n"
-	@printf "Omitting virtualenv removal...\n"
+	sudo ${RM} /var/run/lock/mblog
+	@printf "Omitting system packages removal, use make remove_deps:\n"
+	@printf "nginx python3{-devel,-pip} virtualenv\n"
 
 remove_deps:
 	@printf "========== Removing dependencies ==========\n"
-	sudo yum remove nginx
-	sudo pip uninstall virtualenv
+	@printf "THIS IS VERY DESTRUCTIVE OPERATION. RUN make remove_deps by root.\n"
+	@printf "Packages for removal: nginx python3{-deve;,-pip} virtualenv\n"
+	yum remove nginx python3 python3-devel python3-pip
+	pip uninstall virtualenv
 
 generate_nginx_config:
 

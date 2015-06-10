@@ -3,20 +3,44 @@
 # description: MicroBlojeeq service
 
 # Source function library.
-. /etc/init.d/functions
+. /etc/init.d/functions || exit 1
 
 user=_mblog
 group=nginx
 app_dir=/home/${user}
 app_etc=/etc/mblog
+daemon_name=mblogd
+daemon_path=${app_dir}/env/bin/uwsgi
+pidfile=/var/run/lock/mblog/mblog.pid
+lockfile=/var/run/lock/mblog/mblog.lock
 
 start() {
-    printf "Starting mblogd service...\n"
-    exec ${app_dir}/env/bin/uwsgi --ini ${app_etc}/mblog-uwsgi.ini
+    local rc=0
+    if [ ! -f "$lockfile" ]; then
+        echo -n $"Starting $daemon_name: "
+        daemon --user ${user} --pidfile ${pidfile} ${daemon_path} --http 0.0.0.0:8080 --ini ${app_etc}/mblog-uwsgi.ini && success || failure
+        rc=$?
+#        exec ${app_dir}/env/bin/uwsgi --ini ${app_etc}/mblog-uwsgi.ini
+
+        echo
+        [ $rc = 0 ] && touch ${lockfile}
+    fi
+    return $rc
 }
 
 stop() {
-    printf "stopping\n"
+    echo -n $"Stopping $daemon_name: "
+    killproc -p ${pidfile} ${daemon_path}
+    rc=$?
+
+    echo
+    [ $rc = 0 ] && rm -f ${lockfile}
+    return $rc
+}
+
+restart() {
+    stop
+    start
 }
 
 case "$1" in
@@ -26,15 +50,17 @@ case "$1" in
     stop)
         stop
         ;;
-    restart)
-        stop
-        start
+    restart|reload)
+        restart
+        ;;
+    condrestart|condreload)
+        [ -f ${lockfile} ] && restart || :
         ;;
     status)
-        printf "dunno!\n"
+        status -p ${pidfile} ${daemon_path}
         ;;
     *)
-        "Usage: $0 {start|stop|status|restart}"
+        echo "Usage: $0 {start|stop|restart|reload|condrestart|condreload|status}" >&2
+        exit 3
+        ;;
 esac
-
-exit 0
