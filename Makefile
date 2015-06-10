@@ -20,10 +20,11 @@ DEV_PIP=${DEV_ENV}/bin/pip3
 # Commands
 CP=cp -rf
 RM=rm -rf
+MKDIR=mkdir -p
+CHOWN=chown
 SUWRAP=sudo -u ${PROJ_USER}
 USERADD=adduser -g ${PROJ_WS_GROUP} ${PROJ_USER}
 USERDEL=userdel -rf ${PROJ_USER}
-CHOWN_HOME=chown -R ${PROJ_USER}:${PROJ_WS_GROUP} ${PROJ_HOME}
 
 
 all: help
@@ -55,13 +56,21 @@ clean:
 	${RM} ${PROJ}.egg-info
 	${RM} __pycache__
 	${RM} *~ \#*
+	${RM} ${PROJ_MAKEFILE}
 
 
 install_production_environment: clean install_deps generate_prod_makefile
 	@printf "========== Deploying prod environment ==========\n"
 	sudo ${USERADD}
 	sudo ${CP} ${PROJ_DIST} ${PROJ_HOME}
-	sudo ${CHOWN_HOME}
+	sudo ${CHOWN} -R ${PROJ_USER}:${PROJ_WS_GROUP} ${PROJ_HOME}
+	sudo ${MKDIR} /etc/mblog
+	sudo ${MKDIR} /var/run/mblog
+	sudo ${MKDIR} /var/log/mblog
+	sudo ${CHOWN} ${PROJ_USER}:${PROJ_WS_GROUP} /var/run/mblog
+	sudo ${CHOWN} ${PROJ_USER}:${PROJ_WS_GROUP} /var/log/mblog
+	sudo ${CP} ${PROJ_HOME}/mblog-uwsgi.ini /etc/mblog/
+	sudo ${CP} ${PROJ_HOME}/mblogd /etc/init.d/
 	${SUWRAP} ${MAKE} -C ${PROJ_HOME} -f ${PROJ_HOME}/Makefile.prod install
 	@printf "\n\nUse following command to activate virtual environment:\n"
 	@printf "sudo su ${PROJ_USER}\n"
@@ -83,6 +92,10 @@ generate_prod_makefile:
 remove_production_environment:
 	@printf "========== Removing production environment ==========\n"
 	sudo ${USERDEL}
+	sudo ${RM} /etc/mblog
+	sudo ${RM} /etc/init.d/mblog
+	sudo ${RM} /var/run/mblog
+	sudo ${RM} /var/log/mblog
 	@printf "Omitting system packages removal, use make remove_deps.\n"
 	@printf "Omitting webserver removal (UWSGI, NGINX)...\n"
 	@printf "Omitting virtualenv removal...\n"
@@ -91,6 +104,8 @@ remove_deps:
 	@printf "========== Removing dependencies ==========\n"
 	sudo yum remove nginx
 	sudo pip uninstall virtualenv
+
+generate_nginx_config:
 
 
 .PHONY: all help devel install_deps clean install_production_environment remove_production_environment
