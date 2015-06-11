@@ -6,7 +6,7 @@ VENV=virtualenv --python=python3
 PROJ_USER=_mblog
 PROJ_HOME=/home/${PROJ_USER}
 PROJ_DIST=`pwd`/*
-PROJ_WS_GROUP=nginx
+PROJ_GROUP=_mblog
 PROJ_ENV=${PROJ_HOME}/env
 PROJ_PYTHON=${PROJ_ENV}/bin/python3
 PROJ_PIP=${PROJ_ENV}/bin/pip3
@@ -24,7 +24,7 @@ MKDIR=mkdir -p
 CHOWN=chown
 CHMOD=chmod
 SUWRAP=sudo -u ${PROJ_USER}
-USERADD=adduser -g ${PROJ_WS_GROUP} ${PROJ_USER}
+USERADD=adduser -g ${PROJ_GROUP} ${PROJ_USER}
 USERDEL=userdel -rf ${PROJ_USER}
 
 
@@ -62,26 +62,33 @@ clean:
 
 install_production_environment: clean install_deps generate_prod_makefile
 	@printf "========== Deploying prod environment ==========\n"
+	sudo groupadd ${PROJ_GROUP}
 	sudo ${USERADD}
 	sudo ${CP} ${PROJ_DIST} ${PROJ_HOME}
-	sudo ${CHOWN} -R ${PROJ_USER}:${PROJ_WS_GROUP} ${PROJ_HOME}
+	sudo ${CHOWN} -R ${PROJ_USER}:${PROJ_GROUP} ${PROJ_HOME}
 	sudo ${MKDIR} /etc/mblog
-	sudo ${MKDIR} /var/run/mblog
+#	sudo ${MKDIR} /var/run/mblog
 	sudo ${MKDIR} /var/log/mblog
 	sudo ${MKDIR} /var/run/lock/mblog
-	sudo ${CHOWN} ${PROJ_USER}:${PROJ_WS_GROUP} /var/run/mblog
-	sudo ${CHOWN} ${PROJ_USER}:${PROJ_WS_GROUP} /var/log/mblog
-	sudo ${CHOWN} ${PROJ_USER}:${PROJ_WS_GROUP} /var/run/lock/mblog
+#	sudo ${CHOWN} ${PROJ_USER}:${PROJ_GROUP} /var/run/lock/mblog
+	sudo ${CHOWN} ${PROJ_USER}:${PROJ_GROUP} /var/log/mblog
+	sudo ${CHOWN} ${PROJ_USER}:${PROJ_GROUP} /var/run/lock/mblog
 	sudo ${CP} ${PROJ_HOME}/mblog-uwsgi.ini /etc/mblog/
+	sudo ${CP} ${PROJ_HOME}/mblog-nginx.conf /etc/nginx/conf.d/
 	sudo ${CP} ${PROJ_HOME}/mblogd /etc/init.d/
 	sudo ${CHMOD} +x /etc/init.d/mblogd
 	sudo chkconfig --add mblogd
 	sudo chkconfig mblogd on
 	${SUWRAP} ${MAKE} -C ${PROJ_HOME} -f ${PROJ_HOME}/Makefile.prod install
-	@printf "\n\nUse following command to activate virtual environment:\n"
+	@printf "\n\nUse following commands to start service:\n"
+	@printf "sudo service mblogd start\n"
+	@printf "sudo service nginx start\n"
+	@printf "test with curl localhost\n"
+	@printf "\n\nUse following commands to activate virtual environment:\n"
 	@printf "sudo su ${PROJ_USER}\n"
 	@printf "cd ${PROJ_HOME}\n"
 	@printf "source ${PROJ_ENV}/bin/activate\n"
+
 
 install_deps:
 	@printf "========== Installing dependencies ==========\n"
@@ -98,9 +105,11 @@ generate_prod_makefile:
 remove_production_environment:
 	@printf "========== Removing production environment ==========\n"
 	sudo ${USERDEL}
+#	sudo groupdel ${PROJ_GROUP}
 	sudo ${RM} /etc/mblog
+	sudo ${RM} /etc/nginx/conf.d/mblog-nginx.conf
 	sudo ${RM} /etc/init.d/mblogd
-	sudo ${RM} /var/run/mblog
+#	sudo ${RM} /var/run/mblog
 	sudo ${RM} /var/log/mblog
 	sudo ${RM} /var/run/lock/mblog
 	@printf "Omitting system packages removal, use make remove_deps:\n"
