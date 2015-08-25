@@ -1,7 +1,5 @@
 flask>=0.10.1
-sqlalchemy==0.9.9
-sqlalchemy-migrate
 flask-wtf
 flask-script
-flask-sqlalchemy
+pymongo
 uwsgi

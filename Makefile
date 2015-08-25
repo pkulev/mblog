@@ -81,6 +81,7 @@ install_production_environment: clean install_deps generate_prod_makefile
 	sudo chkconfig mblogd on
 	${SUWRAP} ${MAKE} -C ${PROJ_HOME} -f ${PROJ_HOME}/Makefile.prod install
 	@printf "\n\nUse following commands to start service:\n"
+	@printf "sudo service mongod start\n"
 	@printf "sudo service mblogd start\n"
 	@printf "sudo service nginx start\n"
 	@printf "test with curl localhost\n"
@@ -92,7 +93,7 @@ install_production_environment: clean install_deps generate_prod_makefile
 
 install_deps:
 	@printf "========== Installing dependencies ==========\n"
-	sudo yum install nginx python3 python3-pip python3-devel
+	sudo yum install nginx python3 python3-pip python3-devel mongodb-server mongodb
 	sudo pip install virtualenv
 
 generate_prod_makefile:
@@ -113,13 +114,13 @@ remove_production_environment:
 	sudo ${RM} /var/log/mblog
 	sudo ${RM} /var/run/lock/mblog
 	@printf "Omitting system packages removal, use make remove_deps:\n"
-	@printf "nginx python3{-devel,-pip} virtualenv\n"
+	@printf "nginx python3{-devel,-pip} mongodb{,-server} virtualenv\n"
 
 remove_deps:
 	@printf "========== Removing dependencies ==========\n"
 	@printf "THIS IS VERY DESTRUCTIVE OPERATION. RUN make remove_deps by root.\n"
 	@printf "Packages for removal: nginx python3{-deve;,-pip} virtualenv\n"
-	yum remove nginx python3 python3-devel python3-pip
+	yum remove nginx python3 python3-devel python3-pip mongodb mongodb-server
 	pip uninstall virtualenv
 
 generate_nginx_config:
