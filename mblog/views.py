@@ -1,9 +1,10 @@
 from flask import render_template, flash, redirect
 
 from mblog import app
+from mblog import db
 from mblog.forms import LoginForm
 from mblog.forms import SignupForm
-
+from mblog.models import User, Session
 
 @app.route("/")
 @app.route("/index")
@@ -28,6 +29,12 @@ def login():
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
+        rc = User(db).add_user(
+                form.login.data,
+                form.password.data,
+                form.email.data)
+        if rc is False:
+            flush("OLOLO")
         return redirect("/index")
 
     return render_template("signup.tpl",
