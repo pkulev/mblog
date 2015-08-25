@@ -23,7 +23,7 @@ class User(object):
         """Return hashed password: (HASH(password + salt), salt)."""
         if salt is None:
             salt = self.make_salt()
-        return hashlib.sha256(password + salt).hexdigest() + "," + salt
+        return hashlib.sha256("".join([password, salt]).encode("utf-8")).hexdigest() + "," + salt
 
     def validate_login(self, username, password):
         """
