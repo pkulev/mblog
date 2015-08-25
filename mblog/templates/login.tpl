@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.tpl" %}
 
 {% block content %}
 <h1>Sign In</h1>
@@ -9,6 +9,7 @@
         {{ form.openid(size=80) }}<br>
     </p>
     <p>Remember me: {{ form.remember_me }}</p>
+    <p>I have no account and want to <a href={{ url_for(".signup") }}> register.</a></p>
     <p><input type="submit" value="Sign In"></p>
 </form>
 {% endblock %}
