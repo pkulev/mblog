@@ -2,7 +2,7 @@
 
 {% block content %}
 {% if user %}
-<h1>Hello, {{ user.nickname }}!</h1>
+<h1>Hello, {{ user["_id"]}}!</h1>
 {% else %}
 <h1>Hello, Stranger!</h1>
 <h3>Please, <a href={{ url_for(".login") }}>login</a> to get access to blog.</h3>

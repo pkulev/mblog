@@ -5,8 +5,16 @@
 <form action="" method="post" name="login">
     {{ form.hidden_tag() }}
     <p>
-        Please enter your OpenID:<br>
-        {{ form.openid(size=80) }}<br>
+        <table>
+            <tr>
+              <td>Login: </td>
+              <td>{{ form.login(size=30) }}</td>
+            </tr>
+            <tr>
+              <td>Password: </td>
+              <td>{{form.password(size=30)}}</td>
+            </tr>
+        </table>
         {% for error in form.errors.openid %}
             <span style="color: red;">[{{error}}]</span>
         {% endfor %}<br>

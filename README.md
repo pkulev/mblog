@@ -23,3 +23,8 @@ Needed GNU make and python-virtualenv for deploying.
 4. Run server: **mblog-run runserver --threaded**
 
 
+
+
+System dependencies
+-------------------
+nginx, python, mongodb, python-pip

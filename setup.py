@@ -1,10 +1,12 @@
-import os
-import argparse
+"""Setup file."""
+
 from setuptools import setup, find_packages
+
 
 def description():
     with open("README.md") as f:
         return f.read()
+
 
 def requirements():
     with open("requirements.txt") as f:

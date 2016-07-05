@@ -6,6 +6,7 @@ from mblog.forms import LoginForm
 from mblog.forms import SignupForm
 from mblog.models import User, Session
 
+
 @app.route("/")
 @app.route("/index")
 def index():
@@ -16,13 +17,13 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        flash("Login requested: {0}, remember: {1}.".format(
-            form.openid.data,
-            form.remember_me.data))
+        login = form.login.data
+        password = form.password.data
+        user = User(db).validate_login(login, password)
+        flash(str(user))
         return redirect("/index")
 
-    return render_template("login.tpl",
-            title="Sign In", form=form)
+    return render_template("login.tpl", title="Sign In", form=form)
 
 
 @app.route("/signup", methods=["GET", "POST"])
@@ -34,22 +35,21 @@ def signup():
                 form.password.data,
                 form.email.data)
         if rc is False:
-            flush("OLOLO")
+            flash("OLOLO")
         return redirect("/index")
 
-    return render_template("signup.tpl",
-            title="Sign Up", form=form)
+    return render_template("signup.tpl", title="Sign Up", form=form)
 
 
 @app.route("/user/<name>")
 def user(name):
-    user = {"nickname" : name}
-    posts = [
-        {"author": {"nickname": "MoSt"},
-        "body": "Pschooo! Flask is great!"},
-        {"author": {"nickname": "Zulu"},
-        "body": "PschooPschoooo"}]
-    return render_template("index.tpl",
-            title="Home",
-            user=user,
-            posts=posts)
+    user = {"nickname": name}
+    posts = [{
+        "author": {"nickname": "MoSt"},
+        "body": "Pschooo! Flask is great!"
+    }, {
+        "author": {"nickname": "Zulu"},
+        "body": "PschooPschoooo"}
+    ]
+
+    return render_template("index.tpl", title="Home", user=user, posts=posts)
